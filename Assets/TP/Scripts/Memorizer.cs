@@ -9,7 +9,7 @@ public class Memorizer : MonoBehaviour
 {
 
     private const char DELIMITER = ',';
-    private const string FILEPATH = "M.txt";
+    private const string FILEPATH = "Assets/TP/M.txt";
 
     private Quaternion _initialRotation;
     private float _startTime;

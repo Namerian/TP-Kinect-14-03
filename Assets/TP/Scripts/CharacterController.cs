@@ -339,6 +339,12 @@ public class CharacterController : MonoBehaviour
             float.TryParse(parsedBodyData[joint * 3 + 1], out y);
             float.TryParse(parsedBodyData[joint * 3 + 2], out z);
 
+            if (MirroredMovement)
+            {
+                x = -x;
+                z = -z;
+            }
+
             _bones[joint].transform.localPosition = new Vector3(x, y, z);
         }
     }
