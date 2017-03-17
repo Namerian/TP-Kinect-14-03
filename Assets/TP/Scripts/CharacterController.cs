@@ -17,6 +17,11 @@ public class CharacterController : MonoBehaviour
     [SerializeField]
     private bool MirroredMovement = false;
 
+    [SerializeField]
+    private float ErrorMargin = 0.05f;
+    [SerializeField]
+    private float ScoreGainPerJoinPerSecond = 0.05f;
+
     //public GameObject debugText;
     [SerializeField]
     private GameObject Hip_Center;
@@ -88,6 +93,8 @@ public class CharacterController : MonoBehaviour
 
     private KinectManager _kinectManager = null;
 
+    private float _currentScore = 0;
+
     //===================================================================
     // monobehaviour methods
     //===================================================================
@@ -156,7 +163,7 @@ public class CharacterController : MonoBehaviour
                 // then play the line
                 if (_kinectManager && _playLine.Length > 0)
                 {
-                    SetBodyData(_playLine);
+                    SetBodyData(_playLine, deltaTime);
                 }
 
                 // and read the next line
@@ -327,17 +334,20 @@ public class CharacterController : MonoBehaviour
         }*/
     }
 
-    private void SetBodyData(string bodyData)
+    private void SetBodyData(string bodyData, float deltaTime)
     {
         string[] parsedBodyData = bodyData.Split(DELIMITER);
 
-        for (int joint = 0; joint < Enum.GetValues(typeof(Bones)).Length; joint++)
+        uint playerID = _kinectManager != null ? _kinectManager.GetPlayer1ID() : 0;
+        Vector3 posPointMan = _kinectManager.GetUserPosition(playerID);
+
+        for (int jointIndex = 0; jointIndex < Enum.GetValues(typeof(Bones)).Length; jointIndex++)
         {
             float x, y, z;
 
-            float.TryParse(parsedBodyData[joint * 3], out x);
-            float.TryParse(parsedBodyData[joint * 3 + 1], out y);
-            float.TryParse(parsedBodyData[joint * 3 + 2], out z);
+            float.TryParse(parsedBodyData[jointIndex * 3], out x);
+            float.TryParse(parsedBodyData[jointIndex * 3 + 1], out y);
+            float.TryParse(parsedBodyData[jointIndex * 3 + 2], out z);
 
             if (MirroredMovement)
             {
@@ -345,7 +355,29 @@ public class CharacterController : MonoBehaviour
                 z = -z;
             }
 
-            _bones[joint].transform.localPosition = new Vector3(x, y, z);
+            _bones[jointIndex].transform.localPosition = new Vector3(x, y, z);
+
+            //===================================================================
+            // Comparison
+            //===================================================================
+            Vector3 posJoint = _kinectManager.GetJointPosition(playerID, jointIndex);
+            posJoint -= posPointMan;
+
+            Vector3 parsedJointPos = new Vector3(x, y, z);
+
+            float distance = (posJoint - parsedJointPos).magnitude;
+
+            if(distance <= ErrorMargin)
+            {
+                //Debug.Log("distance ok");
+                _currentScore = ScoreGainPerJoinPerSecond * deltaTime;
+            }
+            else
+            {
+                //Debug.Log("distance not ok (" + distance + ")");
+            }
         }
+
+        UIManager.Instance.SetScoreText((int)_currentScore);
     }
 }
