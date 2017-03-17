@@ -9,41 +9,37 @@ public class Memorizer : MonoBehaviour
 {
 
     private const char DELIMITER = ',';
-    private const string FILEPATH = "Assets/TP/M.txt";
+    //private const string FILEPATH = "Assets/TP/M.txt";
 
     private Quaternion _initialRotation;
     private float _startTime;
 
-    private string _fileName;
-
-    // Use this for initialization
-    void Start()
-    {
-        // delete the old csv file
-        if (FILEPATH.Length > 0 && File.Exists(FILEPATH))
-        {
-            File.Delete(FILEPATH);
-        }
-
-        _startTime = Time.time;
-
-
-    }
+    private bool _isRecording;
+    private string _filePath;
+    StreamWriter _streamWriter;
 
     // Update is called once per frame
     void Update()
     {
+        if (!_isRecording)
+        {
+            return;
+        }
+
         string bodyData = GetBodyData();
 
-        if(bodyData != null && bodyData.Length > 0)
+        if (bodyData != null && bodyData.Length > 0)
         {
             //*********************
 
-            using (StreamWriter writer = File.AppendText(FILEPATH))
+            /*using (StreamWriter writer = File.AppendText(_filePath))
             {
                 string sRelTime = string.Format("{0:F3}", (Time.time - _startTime));
                 writer.WriteLine(sRelTime + "|" + bodyData);
-            }
+            }*/
+
+            string sRelTime = string.Format("{0:F3}", (Time.time - _startTime));
+            _streamWriter.WriteLine(sRelTime + "|" + bodyData);
 
             //*********************
         }
@@ -51,6 +47,46 @@ public class Memorizer : MonoBehaviour
         {
             Debug.Log("Something went wrong!");
         }
+    }
+
+    public void StartRecording()
+    {
+        if (_isRecording)
+        {
+            return;
+        }
+
+        string path = Application.dataPath + GameManager.Instance.DanceFilePath;
+        int index = 1;
+        string name = "Danse";
+        string fileName = name + index + ".txt";
+
+        while (true)
+        {
+            if (File.Exists(path+fileName))
+            {
+                Debug.Log("File exists: " + fileName);
+                index++;
+                fileName = name + index + ".txt";
+            }
+            else
+            {
+                _filePath = path + fileName;
+                _streamWriter = File.CreateText(_filePath);
+                break;
+            }
+        }
+
+        _startTime = Time.time;
+
+        _isRecording = true;
+    }
+
+    public void StopRecording()
+    {
+        _streamWriter.Close();
+
+        _isRecording = false;
     }
 
     private string GetBodyData()

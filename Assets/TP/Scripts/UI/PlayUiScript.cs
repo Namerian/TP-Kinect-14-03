@@ -18,7 +18,7 @@ public class PlayUiScript : MonoBehaviour, IMenuState
         _canvasGroup.interactable = false;
         _canvasGroup.blocksRaycasts = false;
 
-        _scoreText = this.transform.Find("ScoreText").GetComponent<Text>();
+        _scoreText = this.transform.Find("ScorePanel/ScoreText").GetComponent<Text>();
     }
 
     public void OnEnter()
@@ -45,11 +45,14 @@ public class PlayUiScript : MonoBehaviour, IMenuState
 
     public void SetScore(int score)
     {
-        Debug.Log("xxx");
-
         if(_active && _scoreText != null)
         {
             _scoreText.text = "Score: " + score;
         }
+    }
+
+    public void OnBackButton()
+    {
+        UIManager.Instance.SwitchState(UIManager.Instance.MenuState);
     }
 }

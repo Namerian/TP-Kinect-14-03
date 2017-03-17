@@ -10,7 +10,6 @@ public class PlayMenuScript : MonoBehaviour, IMenuState
     private CanvasGroup _canvasGroup;
     private bool _active = false;
 
-    private List<string> _danceFiles = new List<string>();
     private Transform _danceListContentTransform;
     private List<GameObject> _danceListElements = new List<GameObject>();
 
@@ -33,16 +32,19 @@ public class PlayMenuScript : MonoBehaviour, IMenuState
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
 
-            _danceFiles.Clear();
+            foreach(GameObject obj in _danceListElements)
+            {
+                Destroy(obj);
+            }
+
             DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath + "/" + GameManager.Instance.DanceFilePath);
 
             foreach (FileInfo danceFile in dirInfo.GetFiles("*.txt"))
             {
-                _danceFiles.Add(danceFile.Name);
-
                 GameObject listElement = Instantiate(Resources.Load<GameObject>("Prefabs/DanceSelectionListElement"), _danceListContentTransform);
                 listElement.GetComponent<Button>().onClick.AddListener(delegate { OnDanceListElementPressed(danceFile.Name); });
                 listElement.transform.Find("Text").GetComponent<Text>().text = danceFile.Name;
+                _danceListElements.Add(listElement);
             }
         }
     }

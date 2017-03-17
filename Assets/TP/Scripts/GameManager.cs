@@ -18,12 +18,16 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     private GameObject _replayCharacterPrefab;
     [SerializeField]
     private GameObject _cubemanPrefab;
+    [SerializeField]
+    private GameObject _memorizeCharPrefab;
 
     [Header("Play")]
     [SerializeField]
     private Vector3 _replayCharPos;
     [SerializeField]
     private Vector3 _avatarCharPos;
+    [SerializeField]
+    private Vector3 _memCharPos;
 
     //====================================================================
 
@@ -32,6 +36,7 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     public bool _playerDetected = false;
     private MyCharacterController _replayCharacter;
     private CubemanController _cubemanCharacter;
+    private Memorizer _memorizeCharacter;
 
     //====================================================================
 
@@ -57,6 +62,8 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
 
     public void StartPlaying(string danceName)
     {
+        ClearCharacters();
+
         _currentDance = danceName;
 
         _replayCharacter = Instantiate(_replayCharacterPrefab).GetComponent<MyCharacterController>();
@@ -72,8 +79,14 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
 
     public void StartRecording()
     {
+        ClearCharacters();
+
         DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath + "/" + GameManager.Instance.DanceFilePath);
-        
+
+        _memorizeCharacter = Instantiate(_memorizeCharPrefab).GetComponent<Memorizer>();
+        _memorizeCharacter.transform.position = _memCharPos;
+
+        UIManager.Instance.SwitchState(UIManager.Instance.RecordUiState);
     }
 
     //====================================================================
@@ -119,5 +132,36 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
         Debug.Log("ttt");
 
         _replayCharacter.StartPlaying(Application.dataPath + _danceFileFolderPath + _currentDance);
+    }
+
+    private void ClearCharacters()
+    {
+        if (_replayCharacter != null)
+        {
+            Destroy(_replayCharacter.gameObject);
+        }
+
+        if (_cubemanCharacter != null)
+        {
+            Destroy(_cubemanCharacter.gameObject);
+        }
+
+        if (_memorizeCharacter != null)
+        {
+            Destroy(_memorizeCharacter);
+        }
+    }
+
+    //====================================================================
+
+    public void OnStartButtonPressed()
+    {
+        _memorizeCharacter.StartRecording();
+    }
+
+    public void OnStopButtonPressed()
+    {
+        _memorizeCharacter.StopRecording();
+        UIManager.Instance.SwitchState(UIManager.Instance.MenuState);
     }
 }
