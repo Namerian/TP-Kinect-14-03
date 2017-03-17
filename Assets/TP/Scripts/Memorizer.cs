@@ -14,6 +14,8 @@ public class Memorizer : MonoBehaviour
     private Quaternion _initialRotation;
     private float _startTime;
 
+    private string _fileName;
+
     // Use this for initialization
     void Start()
     {

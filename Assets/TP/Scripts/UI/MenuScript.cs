@@ -54,7 +54,7 @@ public class MenuScript : MonoBehaviour, IMenuState
     {
         if (_active)
         {
-            UIManager.Instance.SwitchState(UIManager.Instance.RecordMenuState);
+            UIManager.Instance.SwitchState(UIManager.Instance.RecordUiState);
         }
     }
 

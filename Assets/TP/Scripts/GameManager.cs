@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterface
@@ -16,7 +17,7 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     [SerializeField]
     private GameObject _replayCharacterPrefab;
     [SerializeField]
-    private GameObject _avatarPrefab;
+    private GameObject _cubemanPrefab;
 
     [Header("Play")]
     [SerializeField]
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     private string _currentDance;
     public bool _playerDetected = false;
     private MyCharacterController _replayCharacter;
-    private AvatarController _avatarCharacter;
+    private CubemanController _cubemanCharacter;
 
     //====================================================================
 
@@ -39,7 +40,7 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
         if (Instance == null)
         {
             Instance = this;
-            KinectManager.Instance.GestureListeners.Add(this);
+            //KinectManager.Instance.GestureListeners.Add(this);
         }
         else
         {
@@ -58,19 +59,21 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     {
         _currentDance = danceName;
 
-        Debug.Log("eee");
-
         _replayCharacter = Instantiate(_replayCharacterPrefab).GetComponent<MyCharacterController>();
         _replayCharacter.transform.position = _replayCharPos;
 
-        _avatarCharacter = Instantiate(_avatarPrefab).GetComponent<AvatarController>();
-        _avatarCharacter.transform.position = _avatarCharPos;
+        _cubemanCharacter = Instantiate(_cubemanPrefab).GetComponent<CubemanController>();
+        _cubemanCharacter.transform.position = _avatarCharPos;
 
         UIManager.Instance.SwitchState(UIManager.Instance.PlayUiState);
 
-        Debug.Log("rrr");
-
         Invoke("Play", 0.5f);
+    }
+
+    public void StartRecording()
+    {
+        DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath + "/" + GameManager.Instance.DanceFilePath);
+        
     }
 
     //====================================================================
@@ -78,10 +81,9 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
 
     void KinectGestures.GestureListenerInterface.UserDetected(uint userId, int userIndex)
     {
-        if(userId == 1)
-        {
-            _playerDetected = true;
-        }
+        Debug.Log("UserDetected: userId=" + userId);
+
+        _playerDetected = true;
     }
 
     void KinectGestures.GestureListenerInterface.UserLost(uint userId, int userIndex)
@@ -109,6 +111,7 @@ public class GameManager : MonoBehaviour, KinectGestures.GestureListenerInterfac
     {
         if (!_playerDetected)
         {
+            Debug.Log("player 1 missing");
             Invoke("Play", 0.5f);
             return;
         }

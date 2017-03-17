@@ -224,6 +224,9 @@ public class MyCharacterController : MonoBehaviour
 
     public bool StartPlaying(string filePath)
     {
+        Debug.Log("filePath=" + filePath);
+
+
         if (_isPlaying)
             return false;
 
@@ -367,7 +370,7 @@ public class MyCharacterController : MonoBehaviour
 
             float distance = (posJoint - parsedJointPos).magnitude;
 
-            if(distance <= ErrorMargin)
+            if (distance <= ErrorMargin)
             {
                 //Debug.Log("distance ok");
                 _currentScore = ScoreGainPerJoinPerSecond * deltaTime;
@@ -378,6 +381,6 @@ public class MyCharacterController : MonoBehaviour
             }
         }
 
-        //UIManager.Instance.SetScoreText((int)_currentScore);
+        UIManager.Instance.PlayUiState.SetScore((int)_currentScore);
     }
 }
