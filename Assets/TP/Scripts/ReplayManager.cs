@@ -10,13 +10,13 @@ public class ReplayManager : MonoBehaviour, KinectGestures.GestureListenerInterf
     [SerializeField]
     private string _dataFile;
 
-    private CharacterController _charController;
+    private MyCharacterController _charController;
 
     // Use this for initialization
     void Start()
     {
         GameObject obj = Instantiate<GameObject>(_replayCharPrefab);
-        _charController = obj.GetComponent<CharacterController>();
+        _charController = obj.GetComponent<MyCharacterController>();
     }
 
     // Update is called once per frame

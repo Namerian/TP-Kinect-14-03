@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class MyCharacterController : MonoBehaviour
 {
     private const char DELIMITER = ',';
 
@@ -378,6 +378,6 @@ public class CharacterController : MonoBehaviour
             }
         }
 
-        UIManager.Instance.SetScoreText((int)_currentScore);
+        //UIManager.Instance.SetScoreText((int)_currentScore);
     }
 }
